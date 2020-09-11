@@ -24,9 +24,9 @@
 
          var chart = new google.visualization.ColumnChart(document.getElementById('number_format_chart'));
          chart.draw(data, options);
-
-         document.getElementById('format-select').onchange = function() {
-           options['vAxis']['format'] = this.value;
-           chart.draw(data, options);
-         };
+         
+		 $('#format-select').change(function(){
+            options['vAxis']['format'] = this.value;
+            chart.draw(data, options);
+		 })
       };
