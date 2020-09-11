@@ -1,28 +1,25 @@
 
 window.onload = function() {
 	
-	var dataArray1 = [];
+	var dataArray = [];
     $.ajax({
         async: false,
         url: "char",
         dataType:"json",
-        success: function(dado) {
-  	      
-  	      $.each(dado, function(index, teste){
-  	    	  var date = new Date(teste.date);
-  	    	dataArray1.push([   
-  	    		
-  	    		date  , 
-  	    		
-  	    		Number(teste.close.replace('.','')),  
-  	    		
-  	    		Number(teste.open.replace('.',''))
-  	    		
-  	    		
-  	    		]);
-  	      });
-  	    drawTrendlines(dataArray1);
-        }
+        success: function(mapa) {
+	  	      $.each(mapa, function(idx1, mapaAux){
+	  	      		$.each(mapaAux.dia, function(idx2, diasAux){
+	  	      			var date = new Date(diasAux.date);
+	  	      			
+			  	    	dataArray.push([
+			  	    		date, 
+			  	    		Number(diasAux.close),  
+			  	    		Number(diasAux.open)
+			  	    	]);
+	  	      		});
+	  	      });
+	  	      drawTrendlines(dataArray);
+  	      }
       });
     
 };
@@ -31,14 +28,14 @@ window.onload = function() {
 google.charts.load('current', {packages: ['corechart', 'line']});
 google.charts.setOnLoadCallback(drawTrendlines);
 
-function drawTrendlines(dataArray1) {
+function drawTrendlines(dataArray) {
 
       var data = new google.visualization.DataTable();
       data.addColumn('date', 'X');
       data.addColumn('number', 'CLOSE');
       data.addColumn('number', 'OPEN');
       
-      data.addRows(dataArray1);
+      data.addRows(dataArray);
 
       var options = {
     	        hAxis: {
