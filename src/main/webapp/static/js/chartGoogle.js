@@ -34,7 +34,8 @@ window.onload = function() {
 	      			var date = new Date(diaOperacao.date);
 		  	    	dataArrayMACD.push([
 		  	    		date, 
-		  	    		Number(diaOperacao.macd)
+		  	    		Number(diaOperacao.macd),
+		  	    		Number(diaOperacao.ema9)
 		  	    	]);
 	  	      });
 	  	      drawChartMACD(dataArrayMACD);
@@ -109,11 +110,12 @@ function drawChartMACD(dataArray) {
       
       data.addColumn('date',   'DATA');
       data.addColumn('number', 'MACD');
+      data.addColumn('number', 'EMA9');
       
       data.addRows(dataArray);
 
      var options = {
-       title: 'MACD EMA 9 and 26,',
+       title: 'MACD / EMA9,',
        width: 1000,
        height: 300,
        maxZoomOut:2,
