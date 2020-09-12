@@ -29,7 +29,8 @@ public class Util {
 			quote.getDias().get(i)
 					.setMacdHistograma(
 							quote.getDias().get(i).getMacd().subtract(
-									quote.getDias().get(i).getEma9()));
+									quote.getDias().get(i).getEma9()).add(
+											quote.getDias().get(i).getEma26()));
 		}
 	}
 	
