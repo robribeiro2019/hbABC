@@ -1,6 +1,7 @@
 
 window.onload = function() {
 	
+	/*EMA*/
 	var dataArrayEMA = [];
     $.ajax({
         async: false,
@@ -21,7 +22,8 @@ window.onload = function() {
 	  	      drawChartEMA(dataArrayEMA);
   	      }
     });
-      
+    
+    /*MACD*/
 	var dataArrayMACD = [];
     $.ajax({
         async: false,
@@ -38,9 +40,28 @@ window.onload = function() {
 	  	      drawChartMACD(dataArrayMACD);
   	      }
       });
+      
+      /*MACD Histrograma*/
+	  var dataArrayMACDHist = [];
+	  $.ajax({
+	      async: false,
+	      url: "char",
+	      dataType:"json",
+	      success: function(quote) {
+	    	      $.each(quote.dias, function(idx1, diaOperacao){
+	        			var date = new Date(diaOperacao.date);
+	  	  	    	dataArrayMACDHist.push([
+	  	  	    		date, 
+	  	  	    		Number(diaOperacao.macdHistograma)
+	  	  	    	]);
+	    	      });
+	    	      drawChartMACDHist(dataArrayMACDHist);
+	        }
+	    });
 };
 
 
+/*EMA*/
 google.charts.load('current', {packages: ['corechart', 'line']});
 google.charts.setOnLoadCallback(drawChartEMA);
 
@@ -78,7 +99,8 @@ function drawChartEMA(dataArray) {
 	      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 	      chart.draw(data, options);
 }
- 
+
+/*MACD*/
 google.charts.load('current', {packages: ['corechart', 'line']});
 google.charts.setOnLoadCallback(drawChartMACD);
 
@@ -100,11 +122,42 @@ function drawChartMACD(dataArray) {
        vAxis: { gridlines: { count: 4 } }
      };
      
-     var chart = new google.visualization.LineChart(document.getElementById('number_format_chart'));
+     var chart = new google.visualization.LineChart(document.getElementById('macd_chart'));
      chart.draw(data, options);
      
 	 $('#format-select').change(function(){
         options['vAxis']['format'] = this.value;
         chart.draw(data, options);
 	 })
-  };
+};
+
+/*MACD Histograma*/
+google.charts.load('current', {packages:['corechart']});
+google.charts.setOnLoadCallback(drawChartMACDHist);
+
+function drawChartMACDHist(dataArray) {
+          var data = new google.visualization.DataTable();
+          
+          data.addColumn('date',   'DATA');
+          data.addColumn('number', 'MACD Histograma');
+          
+          data.addRows(dataArray);
+
+         var options = {
+           title: 'MACD Histograma',
+	       width: 1000,
+	       height: 300,
+	       maxZoomOut:2,
+		   keepInBounds: true,
+	       bar: {groupWidth: '95%'},
+	       vAxis: { gridlines: { count: 4 } }
+         };
+
+         var chart = new google.visualization.ColumnChart(document.getElementById('macdhist_chart'));
+         chart.draw(data, options);
+         
+		 $('#format-select').change(function(){
+            options['vAxis']['format'] = this.value;
+            chart.draw(data, options);
+		 })
+ };

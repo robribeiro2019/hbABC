@@ -20,28 +20,31 @@ public class DiaOperacao implements Serializable {
 	private BigDecimal ema12;
 	private BigDecimal ema26;
 	private BigDecimal macd;
+	private BigDecimal macdHistograma;
 	
 	public DiaOperacao(LocalDate date, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close,
 			BigDecimal adjClose, BigDecimal volume, BigDecimal ema9, BigDecimal ema12, BigDecimal ema26,
-			BigDecimal macdLinha) {
-		this.date     = date;
-		this.open     = open;
-		this.high     = high;
-		this.low      = low;
-		this.close    = close;
-		this.adjClose = adjClose;
-		this.volume   = volume;
-		this.ema9     = ema9;
-		this.ema12    = ema12;
-		this.ema26    = ema26;
-		this.macd     = macdLinha;
+			BigDecimal macd, BigDecimal macdHistograma) {
+		this.date           = date;
+		this.open           = open;
+		this.high           = high;
+		this.low            = low;
+		this.close          = close;
+		this.adjClose       = adjClose;
+		this.volume         = volume;
+		this.ema9           = ema9;
+		this.ema12          = ema12;
+		this.ema26          = ema26;
+		this.macd           = macd;
+		this.macdHistograma = macdHistograma;
 	}
 	
 	public DiaOperacao() {
-		this.ema9     = new BigDecimal(0.0);
-		this.ema12    = new BigDecimal(0.0);
-		this.ema26    = new BigDecimal(0.0);
-		this.macd     = new BigDecimal(0.0);
+		this.ema9           = new BigDecimal(0.0);
+		this.ema12          = new BigDecimal(0.0);
+		this.ema26          = new BigDecimal(0.0);
+		this.macd           = new BigDecimal(0.0);
+		this.macdHistograma = new BigDecimal(0.0);
 	}	
 	
 	public LocalDate getDate() {
@@ -130,5 +133,13 @@ public class DiaOperacao implements Serializable {
 
 	public void setMacd(BigDecimal macd) {
 		this.macd = macd;
+	}
+
+	public BigDecimal getMacdHistograma() {
+		return macdHistograma;
+	}
+
+	public void setMacdHistograma(BigDecimal macdHistograma) {
+		this.macdHistograma = macdHistograma;
 	}
 }

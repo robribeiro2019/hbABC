@@ -14,20 +14,31 @@ public class Util {
 		Quote quote = new Quote();
 		
 		quote = ReaderCSV.lerArquivoCSV();
-		calculaEma9     (quote);
-		calculaEma12    (quote);
-		calculaEma26    (quote);
-		calculaMacdLinha(quote);
+		calculaEma9          (quote);
+		calculaEma12         (quote);
+		calculaEma26         (quote);
+		calculaMacd          (quote);
+		calculaMacdHistograma(quote);
 		
 		return quote;
 	}
 	
-	public static void calculaMacdLinha(Quote quote) {
+	public static void calculaMacdHistograma(Quote quote) {
+
+		for (int i = 0; i < quote.getDias().size(); i++){
+			quote.getDias().get(i)
+					.setMacdHistograma(
+							quote.getDias().get(i).getMacd().subtract(
+									quote.getDias().get(i).getEma9()));
+		}
+	}
+	
+	public static void calculaMacd(Quote quote) {
 		
 		IntStream.range(0, quote.getDias().size()).forEach(
 				idx -> quote.getDias().get(idx).setMacd(
-						quote.getDias().get(idx).getEma26().subtract(
-								quote.getDias().get(idx).getEma9())
+						quote.getDias().get(idx).getEma12().subtract(
+								quote.getDias().get(idx).getEma26())
 						.setScale(6, BigDecimal.ROUND_DOWN)));
 	}
 	

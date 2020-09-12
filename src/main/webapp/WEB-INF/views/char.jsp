@@ -46,7 +46,14 @@ tr:nth-child(even) {
 			</tr>
 			<tr>
 				<td>
-					<div id="number_format_chart" class="row justify-content-center">
+					<div id="macd_chart" class="row justify-content-center">
+						<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/chartGoogle.js"></script>
+					</div> &nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div id="macdhist_chart" class="row justify-content-center">
 						<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/chartGoogle.js"></script>
 					</div> &nbsp;
 				</td>
