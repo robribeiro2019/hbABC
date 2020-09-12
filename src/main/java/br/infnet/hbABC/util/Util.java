@@ -14,49 +14,31 @@ public class Util {
 		Quote quote = new Quote();
 		
 		quote = ReaderCSV.lerArquivoCSV();
-		calculaEma9           (quote);
-		calculaEma12          (quote);
-		calculaEma26          (quote);
-		//calculaMacdLinha     (quote);
-		//calculaMacdHistograma(quote);
+		calculaEma9     (quote);
+		calculaEma12    (quote);
+		calculaEma26    (quote);
+		calculaMacdLinha(quote);
 		
 		return quote;
 	}
 	
-//	public static void calculaMacdLinha(Quote quote) {
-//		
-//		  double fastEMA = calculaEma(quote, 9).calculate(); 
-//		  double slowEMA = calculaEma(quote, 26).calculate(); 
-//		  value = fastEMA - slowEMA; 
-//		 
-//		  return value; 
-//		
-//		double            multiplicador = getMultiplicador(periodo);
-//		List<DiaOperacao> quoteBars     = quote.getDias();
-//		
-//		for (int i = 1; i < quoteBars.size(); i++) {
-//			double ema = quoteBars.get(i).getClose().doubleValue() * multiplicador + quoteBars.get(i - 1).getClose().doubleValue() * (1 - multiplicador);
-//
-//			switch (periodo) {
-//				case 9:
-//					quoteBars.get(i).setEma9(new BigDecimal(ema));
-//					break;
-//				case 12:
-//					quoteBars.get(i).setEma12(new BigDecimal(ema));
-//					break;
-//				case 26:
-//					quoteBars.get(i).setEma26(new BigDecimal(ema));
-//					break;
-//			}
-//		}
-//	}
+	public static void calculaMacdLinha(Quote quote) {
+		
+		IntStream.range(0, quote.getDias().size()).forEach(
+				idx -> quote.getDias().get(idx).setMacd(
+						quote.getDias().get(idx).getEma26().subtract(
+								quote.getDias().get(idx).getEma9())
+						.setScale(6, BigDecimal.ROUND_DOWN)));
+	}
 	
 	public static void calculaEma9(Quote quote) {
 		
 		List<Double> listEma = calculaEma(9, quote);
 		
-		IntStream.range(0, listEma.size())
-				.forEach(idx -> quote.getDias().get(idx).setEma9(new BigDecimal(listEma.get(idx))));
+		IntStream.range(0, listEma.size()).forEach(
+				idx -> quote.getDias().get(idx).setEma9(
+						new BigDecimal(listEma.get(idx))
+						.setScale(6, BigDecimal.ROUND_DOWN)));
 	}
 	
 	public static void calculaEma12(Quote quote) {
@@ -64,7 +46,9 @@ public class Util {
 		List<Double> listEma = calculaEma(12, quote);
 		
 		IntStream.range(0, listEma.size())
-				.forEach(idx -> quote.getDias().get(idx).setEma12(new BigDecimal(listEma.get(idx))));
+				.forEach(idx -> quote.getDias().get(idx).setEma12(
+						new BigDecimal(listEma.get(idx))
+						.setScale(6, BigDecimal.ROUND_DOWN)));
 	}
 	
 	public static void calculaEma26(Quote quote) {
@@ -72,7 +56,9 @@ public class Util {
 		List<Double> listEma = calculaEma(26, quote);
 		
 		IntStream.range(0, listEma.size())
-				.forEach(idx -> quote.getDias().get(idx).setEma26(new BigDecimal(listEma.get(idx))));
+				.forEach(idx -> quote.getDias().get(idx).setEma26(
+						new BigDecimal(listEma.get(idx))
+						.setScale(6, BigDecimal.ROUND_DOWN)));
 	}
 
 	public static List<Double> calculaEma(int periodo, Quote quote) {

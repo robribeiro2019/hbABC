@@ -47,7 +47,7 @@ tr:nth-child(even) {
 			<tr>
 				<td>
 					<div id="number_format_chart" class="row justify-content-center">
-						<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/chartGoogle2.js"></script>
+						<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/chartGoogle.js"></script>
 					</div> &nbsp;
 				</td>
 			</tr>
