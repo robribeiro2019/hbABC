@@ -6,46 +6,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.infnet.hbABC.model.DiaOperacao;
-import br.infnet.hbABC.model.Mapa;
-import br.infnet.hbABC.model.dto.MapaDTO;
+import br.infnet.hbABC.model.Quote;
+import br.infnet.hbABC.model.dto.QuoteDTO;
 
 public class Util {
 	
-	public static MapaDTO leArquivo() {
+	public static QuoteDTO leArquivo() {
 
-		MapaDTO mapaDto = new MapaDTO();
+		QuoteDTO quoteDto = new QuoteDTO();
 		
-		mapaDto.setMapa (ReaderCSV.lerArquivoCSV());
-		mapaDto.setMapas(mapaDto.getMapa());
-
-		mapaDto.setEma9 (calculaEma(9, mapaDto.getMapa().getDias()));
-		mapaDto.setMapas(mapaDto.getEma9());
-
-		mapaDto.setEma12(calculaEma(12, mapaDto.getMapa().getDias()));
-		mapaDto.setMapas(mapaDto.getEma12());
-
-		mapaDto.setEma26(calculaEma(26, mapaDto.getMapa().getDias()));
-		mapaDto.setMapas(mapaDto.getEma26());
+		quoteDto.setQuote(ReaderCSV.lerArquivoCSV());
+		quoteDto.setEma9 (calculaEma(9, quoteDto.getQuote().getDias()));
+		quoteDto.setEma12(calculaEma(12, quoteDto.getQuote().getDias()));
+		quoteDto.setEma26(calculaEma(26, quoteDto.getQuote().getDias()));
+		quoteDto.setMacdLinha(calculaMacdLinha(quoteDto));
+		quoteDto.setMacdHistograma(calculaMacdHistograma(quoteDto));
 		
-		mapaDto.setMacdLinha(calculaMacdLinha(mapaDto));
-		mapaDto.setMapas(mapaDto.getMacdLinha());
-		
-		mapaDto.setMacdHistograma(calculaMacdHistograma(mapaDto));
-		mapaDto.setMapas(mapaDto.getMacdHistograma());
-		
-		return mapaDto;
+		return quoteDto;
 	}
 	
-	public static Mapa calculaMacdLinha(MapaDTO mapaDto) {
+	public static Quote calculaMacdLinha(QuoteDTO quoteDto) {
 		
-		Mapa              macdLinha = new Mapa();
-		List<DiaOperacao> dias = new ArrayList<>();
+		Quote             macdLinha = new Quote();
+		List<DiaOperacao> dias      = new ArrayList<>();
 		DiaOperacao       dia;
 		BigDecimal        close;
 		
-		for(int i = 0; i < mapaDto.getMapa().getDias().size() ; i++) {
-			close = mapaDto.getEma12().getDias().get(i).getClose().subtract(mapaDto.getEma26().getDias().get(i).getClose()).setScale(6, BigDecimal.ROUND_DOWN);
-			dia = new DiaOperacao(mapaDto.getMapa().getDias().get(i).getDate(), close);
+		for(int i = 0; i < quoteDto.getQuote().getDias().size() ; i++) {
+			close = quoteDto.getEma12().getDias().get(i).getClose().subtract(quoteDto.getEma26().getDias().get(i).getClose()).setScale(6, BigDecimal.ROUND_DOWN);
+			dia = new DiaOperacao(quoteDto.getQuote().getDias().get(i).getDate(), close);
 			dias.add(dia);
 		}
 		macdLinha.setDias(dias);
@@ -53,25 +42,25 @@ public class Util {
 		return macdLinha;
 	}
 	
-	public static Mapa calculaEma(int periodo, List<DiaOperacao> diasParaOCalculo) {
+	public static Quote calculaEma(int periodo, List<DiaOperacao> diasParaOCalculo) {
 
 		List<DiaOperacao> dias          = new ArrayList<>();
 		double            multiplicador = getMultiplicador(periodo);
-		DiaOperacao       diaMapaComum;
+		DiaOperacao       diaQuoteComum;
 		
 		for (int i = 0; i < diasParaOCalculo.size(); i++) {
 
-			diaMapaComum = diasParaOCalculo.get(i); 
+			diaQuoteComum = diasParaOCalculo.get(i); 
 			BigDecimal adjClose;
 
 			if (isFirstDay(i)) {
-				adjClose =  calculaEma(diaMapaComum.getClose(), getSMA(i, i + periodo, diasParaOCalculo), multiplicador, i);
+				adjClose =  calculaEma(diaQuoteComum.getClose(), getSMA(i, i + periodo, diasParaOCalculo), multiplicador, i);
 			} else {
-				adjClose = calculaEma(diaMapaComum.getClose(), dias.get(i - 1).getClose(), multiplicador, i);
+				adjClose = calculaEma(diaQuoteComum.getClose(), dias.get(i - 1).getClose(), multiplicador, i);
 			}
-			dias.add(new DiaOperacao(diaMapaComum.getDate(), adjClose));
+			dias.add(new DiaOperacao(diaQuoteComum.getDate(), adjClose));
 		}
-		return new Mapa(dias);
+		return new Quote(dias);
 	}
 	
 	public static boolean isFirstDay(int i) {
@@ -103,17 +92,17 @@ public class Util {
 		return new BigDecimal(average);
 	}
 	
-	public static Mapa calculaMacdHistograma(MapaDTO mapaDto) {
+	public static Quote calculaMacdHistograma(QuoteDTO quoteDto) {
 		
-		Mapa              macdHistograma = new Mapa();
+		Quote              macdHistograma = new Quote();
 		List<DiaOperacao> dias = new ArrayList<>();
 		DiaOperacao       dia;
 		BigDecimal        close;
 		
-		Mapa signalLine = calculaEma(9, mapaDto.getMacdLinha().getDias());
+		Quote signalLine = calculaEma(9, quoteDto.getMacdLinha().getDias());
 		
 		for ( int i = 0; i < signalLine.getDias().size(); i++){
-			close = mapaDto.getMacdLinha().getDias().get(i).getClose().subtract(signalLine.getDias().get(i).getClose()).setScale(6, BigDecimal.ROUND_DOWN);
+			close = quoteDto.getMacdLinha().getDias().get(i).getClose().subtract(signalLine.getDias().get(i).getClose()).setScale(6, BigDecimal.ROUND_DOWN);
 			dia = new DiaOperacao(signalLine.getDias().get(i).getDate(), close);
 			dias.add(dia);
 		}

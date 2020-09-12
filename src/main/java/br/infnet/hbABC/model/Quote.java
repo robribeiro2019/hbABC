@@ -5,16 +5,16 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Mapa implements Serializable {
+public class Quote implements Serializable {
 	
 	private static final long serialVersionUID = -2538998273140450096L;
 	
-	@JsonProperty(value="dia")
+	@JsonProperty(value="dias")
 	private List<DiaOperacao> dias;
 	
-	public Mapa() {}
+	public Quote() {}
 
-	public Mapa(List<DiaOperacao> dias) {
+	public Quote(List<DiaOperacao> dias) {
 		this.dias = dias;
 	}
 

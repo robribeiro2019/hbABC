@@ -17,6 +17,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/quote.js"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css">
 
 </head>

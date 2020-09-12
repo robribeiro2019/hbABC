@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.infnet.hbABC.model.DiaOperacao;
-import br.infnet.hbABC.model.Mapa;
+import br.infnet.hbABC.model.Quote;
 
 public class ReaderCSV {
 	
-	public static Mapa lerArquivoCSV() {
+	public static Quote lerArquivoCSV() {
 		
-		Mapa              mapa = new Mapa();
-		List<DiaOperacao> dias = new ArrayList<DiaOperacao>();
-		BufferedReader    br   = null;
+		Quote             quote = new Quote();
+		List<DiaOperacao> dias  = new ArrayList<DiaOperacao>();
+		BufferedReader    br    = null;
 		DiaOperacao       diaOperacao;
 
 		try {
@@ -48,11 +48,11 @@ public class ReaderCSV {
 
 				dias.add(diaOperacao);
 			}
-			mapa.setDias(dias);
+			quote.setDias(dias);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return mapa;
+		return quote;
 	}	
 }

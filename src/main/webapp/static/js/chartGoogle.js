@@ -6,19 +6,20 @@ window.onload = function() {
         async: false,
         url: "char",
         dataType:"json",
-        success: function(mapa) {
-	  	      $.each(mapa, function(idx1, mapaAux){
-	  	      		$.each(mapaAux.dia, function(idx2, diasAux){
-	  	      			var date = new Date(diasAux.date);
-	  	      			
-			  	    	dataArray.push([
-			  	    		date, 
-			  	    		Number(diasAux.close),  
-			  	    		Number(diasAux.open)
-			  	    	]);
-	  	      		});
+        success: function(quote) {
+	  	      $.each(quote.dias, function(idx1, diaOperacao){
+	      			var date = new Date(diaOperacao.date);
+					var i = 3.0;
+		  	    	dataArray.push([
+		  	    		date, 
+		  	    		Number(diaOperacao.open),  
+		  	    		Number(diaOperacao.close),
+		  	    		Number(5.0 + i),
+		  	    		Number(12.0 + i),
+		  	    		Number(16.0 + i)
+		  	    	]);
 	  	      });
-	  	      drawTrendlines(dataArray);
+	  	      drawChart(dataArray);
   	      }
       });
     
@@ -26,14 +27,17 @@ window.onload = function() {
 
 
 google.charts.load('current', {packages: ['corechart', 'line']});
-google.charts.setOnLoadCallback(drawTrendlines);
+google.charts.setOnLoadCallback(drawChart);
 
-function drawTrendlines(dataArray) {
+function drawChart(dataArray) {
 
       var data = new google.visualization.DataTable();
-      data.addColumn('date', 'X');
-      data.addColumn('number', 'CLOSE');
-      data.addColumn('number', 'OPEN');
+      data.addColumn('date',   'DATA');
+      data.addColumn('number', 'ABERTURA');
+      data.addColumn('number', 'FECHAMENTO');
+      data.addColumn('number', 'EMA9');
+      data.addColumn('number', 'EMA12');
+      data.addColumn('number', 'EMA26');
       
       data.addRows(dataArray);
 
@@ -44,17 +48,10 @@ function drawTrendlines(dataArray) {
     	        vAxis: {
     	          title: 'Close and Open Values'
     	        },
-    	        colors: ['#AB0D06', '#007329'],
-    	        trendlines: {
-    	          0: {type: 'exponential', color: '#333', opacity: 1},
-    	          1: {type: 'linear', color: '#111', opacity: .3}
-    	        },
+    	        colors: ['#008000', '#FF0000', '#FFFF00', '#FFA500', '#0000FF'],
     	        chartArea: {
-    				width:'90%',
+    				width:'70%',
     				height:'60%'
-    			},
-    			legend: {
-    				position:'none'
     			},
     			explorer: {
     				maxZoomOut:2,
@@ -62,7 +59,7 @@ function drawTrendlines(dataArray) {
     			}
     	        
     	      };
-
-      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      chart.draw(data, options);
+    	      
+		      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+		      chart.draw(data, options);
     }
