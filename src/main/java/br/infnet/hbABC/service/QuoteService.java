@@ -9,6 +9,6 @@ import br.infnet.hbABC.util.Util;
 public class QuoteService {
 
 	public Quote getQuote() {
-		return Util.leArquivo().getQuote();
+		return Util.leArquivo();
 	}
 }

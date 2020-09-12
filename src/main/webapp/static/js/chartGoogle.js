@@ -14,9 +14,9 @@ window.onload = function() {
 		  	    		date, 
 		  	    		Number(diaOperacao.open),  
 		  	    		Number(diaOperacao.close),
-		  	    		Number(5.0 + i),
-		  	    		Number(12.0 + i),
-		  	    		Number(16.0 + i)
+		  	    		Number(diaOperacao.ema9),
+		  	    		Number(diaOperacao.ema12),
+		  	    		Number(diaOperacao.ema26)
 		  	    	]);
 	  	      });
 	  	      drawChart(dataArray);
@@ -54,7 +54,7 @@ function drawChart(dataArray) {
     				height:'60%'
     			},
     			explorer: {
-    				maxZoomOut:2,
+    				maxZoomOut:50,
     				keepInBounds: true
     			}
     	        

@@ -3,111 +3,93 @@ package br.infnet.hbABC.util;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import br.infnet.hbABC.model.DiaOperacao;
 import br.infnet.hbABC.model.Quote;
-import br.infnet.hbABC.model.dto.QuoteDTO;
 
 public class Util {
 	
-	public static QuoteDTO leArquivo() {
+	public static Quote leArquivo() {
 
-		QuoteDTO quoteDto = new QuoteDTO();
+		Quote quote = new Quote();
 		
-		quoteDto.setQuote(ReaderCSV.lerArquivoCSV());
-		quoteDto.setEma9 (calculaEma(9, quoteDto.getQuote().getDias()));
-		quoteDto.setEma12(calculaEma(12, quoteDto.getQuote().getDias()));
-		quoteDto.setEma26(calculaEma(26, quoteDto.getQuote().getDias()));
-		quoteDto.setMacdLinha(calculaMacdLinha(quoteDto));
-		quoteDto.setMacdHistograma(calculaMacdHistograma(quoteDto));
+		quote = ReaderCSV.lerArquivoCSV();
+		calculaEma9           (quote);
+		calculaEma12          (quote);
+		calculaEma26          (quote);
+		//calculaMacdLinha     (quote);
+		//calculaMacdHistograma(quote);
 		
-		return quoteDto;
+		return quote;
 	}
 	
-	public static Quote calculaMacdLinha(QuoteDTO quoteDto) {
+//	public static void calculaMacdLinha(Quote quote) {
+//		
+//		  double fastEMA = calculaEma(quote, 9).calculate(); 
+//		  double slowEMA = calculaEma(quote, 26).calculate(); 
+//		  value = fastEMA - slowEMA; 
+//		 
+//		  return value; 
+//		
+//		double            multiplicador = getMultiplicador(periodo);
+//		List<DiaOperacao> quoteBars     = quote.getDias();
+//		
+//		for (int i = 1; i < quoteBars.size(); i++) {
+//			double ema = quoteBars.get(i).getClose().doubleValue() * multiplicador + quoteBars.get(i - 1).getClose().doubleValue() * (1 - multiplicador);
+//
+//			switch (periodo) {
+//				case 9:
+//					quoteBars.get(i).setEma9(new BigDecimal(ema));
+//					break;
+//				case 12:
+//					quoteBars.get(i).setEma12(new BigDecimal(ema));
+//					break;
+//				case 26:
+//					quoteBars.get(i).setEma26(new BigDecimal(ema));
+//					break;
+//			}
+//		}
+//	}
+	
+	public static void calculaEma9(Quote quote) {
 		
-		Quote             macdLinha = new Quote();
-		List<DiaOperacao> dias      = new ArrayList<>();
-		DiaOperacao       dia;
-		BigDecimal        close;
+		List<Double> listEma = calculaEma(9, quote);
 		
-		for(int i = 0; i < quoteDto.getQuote().getDias().size() ; i++) {
-			close = quoteDto.getEma12().getDias().get(i).getClose().subtract(quoteDto.getEma26().getDias().get(i).getClose()).setScale(6, BigDecimal.ROUND_DOWN);
-			dia = new DiaOperacao(quoteDto.getQuote().getDias().get(i).getDate(), close);
-			dias.add(dia);
+		IntStream.range(0, listEma.size())
+				.forEach(idx -> quote.getDias().get(idx).setEma9(new BigDecimal(listEma.get(idx))));
+	}
+	
+	public static void calculaEma12(Quote quote) {
+		
+		List<Double> listEma = calculaEma(12, quote);
+		
+		IntStream.range(0, listEma.size())
+				.forEach(idx -> quote.getDias().get(idx).setEma12(new BigDecimal(listEma.get(idx))));
+	}
+	
+	public static void calculaEma26(Quote quote) {
+		
+		List<Double> listEma = calculaEma(26, quote);
+		
+		IntStream.range(0, listEma.size())
+				.forEach(idx -> quote.getDias().get(idx).setEma26(new BigDecimal(listEma.get(idx))));
+	}
+
+	public static List<Double> calculaEma(int periodo, Quote quote) {
+		
+		double       multiplicador = getMultiplicador(periodo);
+		List<Double> listEma       = new ArrayList<Double>();
+		
+		listEma.add(quote.getDias().get(0).getClose().doubleValue());
+		
+		for (int i = 1; i < quote.getDias().size(); i++) {
+			listEma.add(quote.getDias().get(i).getClose().doubleValue() * multiplicador + listEma.get(i - 1) * (1 - multiplicador));
 		}
-		macdLinha.setDias(dias);
 		
-		return macdLinha;
-	}
-	
-	public static Quote calculaEma(int periodo, List<DiaOperacao> diasParaOCalculo) {
-
-		List<DiaOperacao> dias          = new ArrayList<>();
-		double            multiplicador = getMultiplicador(periodo);
-		DiaOperacao       diaQuoteComum;
-		
-		for (int i = 0; i < diasParaOCalculo.size(); i++) {
-
-			diaQuoteComum = diasParaOCalculo.get(i); 
-			BigDecimal adjClose;
-
-			if (isFirstDay(i)) {
-				adjClose =  calculaEma(diaQuoteComum.getClose(), getSMA(i, i + periodo, diasParaOCalculo), multiplicador, i);
-			} else {
-				adjClose = calculaEma(diaQuoteComum.getClose(), dias.get(i - 1).getClose(), multiplicador, i);
-			}
-			dias.add(new DiaOperacao(diaQuoteComum.getDate(), adjClose));
-		}
-		return new Quote(dias);
-	}
-	
-	public static boolean isFirstDay(int i) {
-		return i == 0;
-	}
-	
-	public static BigDecimal calculaEma(BigDecimal close, BigDecimal emaOntemOuSma, double multiplicador, int i) {
-		BigDecimal bigEma = (close.subtract(emaOntemOuSma)).multiply(new BigDecimal(multiplicador)).add(emaOntemOuSma).setScale(6, BigDecimal.ROUND_DOWN);
-		
-		return bigEma;
+		return listEma;
 	}
 
 	public static double getMultiplicador(int periodo) {
 		return (2.0 / (periodo + 1.0));
-	}
-	
-	public static BigDecimal getSMA(int inicio, int fim, List<DiaOperacao> diasParaOCalculo) {
-		
-		List<BigDecimal> fechamentoPorDia = diasParaOCalculo.stream().map(DiaOperacao::getClose)
-				.collect(Collectors.toList());
-		
-		if (fim > fechamentoPorDia.size()) {
-			fim = fechamentoPorDia.size();
-		}
-		
-		List<BigDecimal> subList = fechamentoPorDia.subList(inicio , fim - 1);
-		Double           average = subList.stream().mapToDouble(BigDecimal::doubleValue).average().getAsDouble();
-		
-		return new BigDecimal(average);
-	}
-	
-	public static Quote calculaMacdHistograma(QuoteDTO quoteDto) {
-		
-		Quote              macdHistograma = new Quote();
-		List<DiaOperacao> dias = new ArrayList<>();
-		DiaOperacao       dia;
-		BigDecimal        close;
-		
-		Quote signalLine = calculaEma(9, quoteDto.getMacdLinha().getDias());
-		
-		for ( int i = 0; i < signalLine.getDias().size(); i++){
-			close = quoteDto.getMacdLinha().getDias().get(i).getClose().subtract(signalLine.getDias().get(i).getClose()).setScale(6, BigDecimal.ROUND_DOWN);
-			dia = new DiaOperacao(signalLine.getDias().get(i).getDate(), close);
-			dias.add(dia);
-		}
-		macdHistograma.setDias(dias);
-		
-		return macdHistograma;
 	}
 }
